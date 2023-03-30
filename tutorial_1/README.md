@@ -27,7 +27,7 @@ cmake ..
 make
 ./cuda_example
 ```
-Hopefully, you should see the following output:
+Hopefully, you should see the following output:  
 ![result](./images/result.png)
 ## Disclaimer.
 The code in this article comes from [csdn](https://blog.csdn.net/comedate/article/details/109347874), and has been appropriately modified to ensure that it compiles and runs correctly.
