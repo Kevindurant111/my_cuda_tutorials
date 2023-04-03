@@ -5,7 +5,7 @@
 
 __global__ void addKernel(int *c, const int *a, const int *b)
 {
-    int i = threadIdx.x;
+    int i = threadIdx.x + blockIdx.x * blockDim.x;
     printf("Thread %d is executing\n", i);
     c[i] = a[i] + b[i];
 }
