@@ -54,7 +54,11 @@ where numBlocks is the number of blocks in the grid and threadsPerBlock is the n
 ### Cuda variables  
 - In CUDA, __threadIdx__ is an internal variable that provides the index of the thread within its block. In a __global\_\_ function, threads are organized into a three-dimensional grid, and each block has a three-dimensional coordinate (blockIdx.x, blockIdx.y, blockIdx.z) indicating its position in the grid. Within each block, threads are organized into a three-dimensional structure, and each thread has a three-dimensional coordinate (threadIdx.x, threadIdx.y, threadIdx.z) indicating its position within its block. It should be noted that it starts from 0.    
 - In CUDA, __blockIdx__ is an internal variable used to access the index of the block in the grid. In a __global\_\_ function, threads are organized into a three-dimensional grid, and each block has a three-dimensional coordinate (blockIdx.x, blockIdx.y, blockIdx.z) indicating its position in the grid. The blockIdx variable is another internal variable that provides the index of each block along each axis. It should be noted that it starts from 0.   
-- In CUDA, __blockDim__ is an internal variable used to access the size of each block(number of threads). In a __global\_\_ function, threads are organized into a three-dimensional grid, and each block has a three-dimensional coordinate (blockIdx.x, blockIdx.y, blockIdx.z) indicating its position in the grid. The blockDim variable is another internal variable that provides the size of each block along each axis.  
+- In CUDA, __blockDim__ is an internal variable used to access the size of each block(number of threads). In a __global\_\_ function, threads are organized into a three-dimensional grid, and each block has a three-dimensional coordinate (blockIdx.x, blockIdx.y, blockIdx.z) indicating its position in the grid. The blockDim variable is another internal variable that provides the size of each block along each axis. In cuda, if blockDim.y and blockDim.z are not specified, they default to 1. You can use the dim3 structure to specify them, for example:  
+```bash
+dim3 block_dim(32, 32, 1);
+my_kernel<<<1, block_dim>>>(...);
+```  
 ### Three different ways to access threads  
 - one-dimensional approach  
 ```bash
@@ -74,9 +78,18 @@ __global__ void myKernelFunction(...) {
     int tid = threadIdx.z * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x + blockIdx.x * blockDim.x * blockDim.y * blockDim.z;
 }
 ```  
-In this example, we use a one-dimensional approach to access threads, as we only need to add elements of a one-dimensional array.
-### Thread, block, grid and warp.  
-todo  
+In this example, we use a one-dimensional approach to access threads, as we only need to add elements of a one-dimensional array.  
+### Thread, block, grid and warp  
+In CUDA programming, there are some important concepts, including thread, thread block, grid, and warp.
 
+- A thread is the most basic unit of execution in CUDA, and each thread can independently execute some calculations. Threads can read and write global memory, shared memory, and read-only memory, and can also use registers and thread-local memory to store data. Each thread has a unique thread ID, which can be obtained using threadIdx.
+
+- A block is a collection of threads that execute on the same SM and can use shared memory for collaboration. The thread block has a unique block ID, which can be obtained using blockIdx, and a fixed limit on the number of threads, which can be obtained using blockDim.
+
+- A grid is a collection of thread blocks that can be executed in parallel on different SMs, thereby increasing parallelism. The grid has a unique grid ID, which can be obtained using gridIdx, and a fixed limit on the number of thread blocks, which can be obtained using gridDim.
+
+- A warp is a concept in GPU hardware, which is a group of 32 threads that execute in parallel, share the same instruction stream, and can execute the same operation in the same clock cycle. In CUDA programming, all threads in a thread block are grouped into several warps, each of which contains 32 threads. The existence of warps can improve the parallelism and efficiency of the GPU.
+
+In CUDA programming, thread block and grid size can be set to control parallel execution. For example, a grid consisting of multiple thread blocks, each containing multiple threads, can be created and parallelized on the GPU. Using thread blocks and grids can make the program fully utilize the parallel computing capabilities of the GPU, thereby accelerating the calculation process.  
 ## Disclaimer
 The code in this article comes from [csdn](https://blog.csdn.net/comedate/article/details/109347874), and has been appropriately modified to ensure that it compiles and runs correctly.
