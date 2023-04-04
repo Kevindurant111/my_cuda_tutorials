@@ -15,9 +15,9 @@ To pass a variable number of arguments to a CUDA C function, one approach is to 
 Overall, while CUDA C does not support variable numbers of arguments directly, there are workarounds that can be used to achieve similar functionality.  
 # CUDA qualifiers  
 In CUDA C, there are three types of functions: global functions, device functions, and host functions.  
-A global function, marked with the __global\_\_ qualifier, is executed on the GPU and can be called from the host. It is typically used to implement a kernel function, which is the entry point for parallel execution on the GPU. A global function can access global memory, shared memory, and other GPU resources, and is executed in parallel by multiple threads in a thread block.  
-A device function, marked with the __device\_\_ qualifier, is also executed on the GPU but can only be called from other device functions or kernel functions. It is typically used to implement reusable code that is used by multiple kernel functions, such as mathematical functions or data structure operations. A device function can access global memory, shared memory, and other GPU resources.  
-A host function, marked with the __host\_\_ qualifier(or no qualifier), is executed on the host CPU and can only be called from other host functions. It is typically used to implement code that sets up the GPU computation, transfers data between the host and the device, or performs other host-related operations. A host function can access host memory, but cannot directly access device memory.  
+- A __global__ function, marked with the __global\_\_ qualifier, is executed on the GPU and can be called from the host. It is typically used to implement a kernel function, which is the entry point for parallel execution on the GPU. A global function can access global memory, shared memory, and other GPU resources, and is executed in parallel by multiple threads in a thread block.  
+- A __device__ function, marked with the __device\_\_ qualifier, is also executed on the GPU but can only be called from other device functions or kernel functions. It is typically used to implement reusable code that is used by multiple kernel functions, such as mathematical functions or data structure operations. A device function can access global memory, shared memory, and other GPU resources.  
+- A __host__ function, marked with the __host\_\_ qualifier(or no qualifier), is executed on the host CPU and can only be called from other host functions. It is typically used to implement code that sets up the GPU computation, transfers data between the host and the device, or performs other host-related operations. A host function can access host memory, but cannot directly access device memory.  
 To implement a parallel computation on the GPU, one typically defines a kernel function as a global function and invokes it from the host using special syntax, such as kernel<<<gridSize, blockSize>>>(args). The kernel function then executes on the GPU, and its results can be transferred back to the host using special memory transfer functions.  
 In summary, in CUDA C, global functions are executed on the GPU and can be called from the host, device functions are executed on the GPU and can only be called from other device functions or kernel functions, and host functions are executed on the host CPU and can only be called from other host functions.  
 ## CUDA API functions  
@@ -53,7 +53,7 @@ If the running time of a global function exceeds 2 seconds, you can try the foll
     cudaDeviceSetLimit(cudaLimitDevRuntimeSyncDepth, <timeout>);
     ```
     Here, __timeout__ is the timeout time in milliseconds. The longer the timeout time, the longer the GPU occupancy time, so it should be adjusted according to the specific situation.  
-    
+
 Note that although you can increase the CUDA runtime timeout to avoid the CUDA_ERROR_LAUNCH_TIMEOUT error, this is not the best solution. The best way is to minimize the running time of the global function by optimizing the code and splitting functions, etc.
 
 
