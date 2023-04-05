@@ -55,10 +55,11 @@ where numBlocks is the number of blocks in the grid and threadsPerBlock is the n
 - In CUDA, __threadIdx__ is an internal variable that provides the index of the thread within its block. In a __global\_\_ function, threads are organized into a three-dimensional grid, and each block has a three-dimensional coordinate (blockIdx.x, blockIdx.y, blockIdx.z) indicating its position in the grid. Within each block, threads are organized into a three-dimensional structure, and each thread has a three-dimensional coordinate (threadIdx.x, threadIdx.y, threadIdx.z) indicating its position within its block. It should be noted that it starts from 0.    
 - In CUDA, __blockIdx__ is an internal variable used to access the index of the block in the grid. In a __global\_\_ function, threads are organized into a three-dimensional grid, and each block has a three-dimensional coordinate (blockIdx.x, blockIdx.y, blockIdx.z) indicating its position in the grid. The blockIdx variable is another internal variable that provides the index of each block along each axis. It should be noted that it starts from 0.   
 - In CUDA, __blockDim__ is an internal variable used to access the size of each block(number of threads). In a __global\_\_ function, threads are organized into a three-dimensional grid, and each block has a three-dimensional coordinate (blockIdx.x, blockIdx.y, blockIdx.z) indicating its position in the grid. The blockDim variable is another internal variable that provides the size of each block along each axis. In cuda, if blockDim.y and blockDim.z are not specified, they default to 1. You can use the dim3 structure to specify them, for example:  
-```bash
-dim3 block_dim(32, 32, 1);
-my_kernel<<<1, block_dim>>>(...);
-```  
+    ```bash
+    dim3 block_dim(32, 32, 1);
+    my_kernel<<<1, block_dim>>>(...);
+    ```  
+- In CUDA, __girdDim\_\_ is an internal variable used to access the size of each gird(number of blocks).  
 ### Three different ways to access threads  
 - one-dimensional approach  
 ```bash
