@@ -3,8 +3,8 @@ In this chapter, we will introduce some basic concepts in CUDA as the first step
 
 # Table of Contents
 
-- [Host and device](#Host and device)
-- [CUDA C Language](#CUDA C Language)
+- [Host and device](#host-and-device)
+- [CUDA C Language](#CUDA-C-Language)
 - [CUDA qualifiers](#CUDA qualifiers)
 - [CUDA API functions ](#CUDA API functions)
 - [CUDA_ERROR_LAUNCH_TIMEOUT ERROR](#CUDA_ERROR_LAUNCH_TIMEOUT ERROR)
