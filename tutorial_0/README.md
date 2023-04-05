@@ -3,11 +3,11 @@ In this chapter, we will introduce some basic concepts in CUDA as the first step
 
 # Table of Contents
 
-- [Host and device](#host-and-device)
+- [Host and device](#Host-and-Device)
 - [CUDA C Language](#CUDA-C-Language)
-- [CUDA qualifiers](#CUDA qualifiers)
-- [CUDA API functions ](#CUDA API functions)
-- [CUDA_ERROR_LAUNCH_TIMEOUT ERROR](#CUDA_ERROR_LAUNCH_TIMEOUT ERROR)
+- [CUDA qualifiers](#CUDA-qualifiers)
+- [CUDA API functions ](#CUDA-API-functions)
+- [CUDA_ERROR_LAUNCH_TIMEOUT ERROR](#CUDA_ERROR_LAUNCH_TIMEOUT-ERROR)
 
 ## Host and device  
 - __Host__ refers to the host or CPU, which is the central processing unit of the computer system running the CUDA program. In a CUDA program, the host is mainly responsible for calling the CUDA API to manage the memory on the device and execute kernel functions. Typically, host allocates memory on the host side, transfers the data to the device, executes the kernel functions, and transfers the results back to the host. host can also control the starting and stopping of the kernel, and can monitor and handle runtime errors.  
