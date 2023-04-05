@@ -8,7 +8,7 @@ This tutorial aims to demonstrate how to write a simple CUDA project, including 
 - [Knowledge points](#Knowledge-points)
     - [Cuda function](#Cuda-function)
     - [Cuda variables](#Cuda-variables)  
-    - [Three different ways to access threads](Three- different-ways-to-access-threads)
+    - [Three different ways to access threads](Three-different-ways-to-access-threads)
     - [Thread, block, grid and warp](Thread-block-grid-and-warp)  
 - [Disclaimer](Disclaimer)
 
