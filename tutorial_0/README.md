@@ -44,6 +44,7 @@ The function prototype is as follows:
     - cudaMemcpyDeviceToHost: Copy data from device to host. 
     - cudaMemcpyDeviceToDevice: Copy data between different regions of device memory.  
     - cudaMemcpyHostToHost: Copy data between different regions of host memory.  
+    
 Note: cudaSuccess is an enumeration value in CUDA C/C++ programming language, which represents the successful execution of a CUDA function. It is defined in the header file cuda_runtime_api.h and has a value of 0. In CUDA programming, we usually check the return value when calling CUDA API functions to ensure that the function is executed successfully. If the function returns cudaSuccess, it indicates that the function has been executed successfully, otherwise, it indicates that the function has failed.  
 ## CUDA_ERROR_LAUNCH_TIMEOUT ERROR   
 In CUDA, global function is a function executed on the GPU device for parallel computing. If the running time of a global function exceeds 2 seconds, the CUDA driver will automatically terminate the function and throw a CUDA_ERROR_LAUNCH_TIMEOUT error. This is to avoid long-running functions occupying GPU resources and preventing other applications from using the GPU.  
