@@ -1,5 +1,17 @@
 # A simple CUDA-based addition function  
-This tutorial aims to demonstrate how to write a simple CUDA project, including how to write CMakeLists, .cu, and main function files.
+This tutorial aims to demonstrate how to write a simple CUDA project, including how to write CMakeLists, .cu, and main function files.  
+
+# Table of Contents
+
+- [Environment configuration](#Environment-configuration)
+- [Usage](#Usage)
+- [Knowledge points](#Knowledge-points)
+    - [Cuda function](#Cuda-function)
+    - [Cuda variables](#Cuda-variables)  
+    - [Three different ways to access threads](Three- different-ways-to-access-threads)
+    - [Thread, block, grid and warp](Thread,-block,-grid-and-warp)  
+- [Disclaimer](Disclaimer)
+
 ## Environment configuration
 Of course, the prerequisite is that you have already installed the CUDA toolkit and your host has at least one NVIDIA graphics card. If you are unsure, you can use 'nvidia-smi' to check the driver version and graphics card status.
 ![nvidia-smi](./images/nvidia-smi.png)  
@@ -16,7 +28,8 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 100
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 100
 # Check the version of gcc after downgrading
 gcc --version
-```
+```  
+
 ## Usage
 ```bash
 git clone https://github.com/Kevindurant111/my_cuda_tutorials.git
@@ -29,6 +42,7 @@ make
 ```
 Hopefully, you should see the following output:  
 ![result](./images/result.png)  
+
 ## Knowledge points  
 ### Cuda function  
 __global\_\_ is a keyword used in CUDA programming language to indicate a function that is to be executed on the GPU. In CUDA, programs are executed on a device called a GPU (Graphics Processing Unit), which has thousands of cores that can work in parallel. The __global__ keyword is used to specify a function that will be launched on the device and executed by many threads in parallel.  
@@ -51,6 +65,7 @@ A __global\_\_ function can be started by
 myKernelFunction<<<numBlocks, threadsPerBlock>>>(...);
 ```  
 where numBlocks is the number of blocks in the grid and threadsPerBlock is the number of threads in each block. In the above example, myKernelFunction will start numBlocks * threadsPerBlock threads, which will be executed in parallel on the GPU device. In this example, we use addKernel by calling it with one block and five thread.  
+
 ### Cuda variables  
 - In CUDA, __threadIdx__ is an internal variable that provides the index of the thread within its block. Within each block, threads are organized into a three-dimensional structure, and each thread has a three-dimensional coordinate (threadIdx.x, threadIdx.y, threadIdx.z) indicating its position within its block. It should be noted that it starts from 0.    
 - In CUDA, __blockIdx__ is an internal variable used to access the index of the block in the grid. In a __global\_\_ function, threads are organized into a three-dimensional grid, and each block has a three-dimensional coordinate (blockIdx.x, blockIdx.y, blockIdx.z) indicating its position in the grid. The blockIdx variable is another internal variable that provides the index of each block along each axis. It should be noted that it starts from 0.   
@@ -60,6 +75,7 @@ where numBlocks is the number of blocks in the grid and threadsPerBlock is the n
     my_kernel<<<1, block_dim>>>(...);
     ```  
 - In CUDA, __girdDim__ is an internal variable used to access the size of each gird(number of blocks).  
+
 ### Three different ways to access threads  
 - one-dimensional approach  
 ```bash
@@ -80,6 +96,7 @@ __global__ void myKernelFunction(...) {
 }
 ```  
 In this example, we use a one-dimensional approach to access threads, as we only need to add elements of a one-dimensional array.  
+
 ### Thread, block, grid and warp  
 In CUDA programming, there are some important concepts, including thread, thread block, grid, and warp.
 
@@ -92,5 +109,6 @@ In CUDA programming, there are some important concepts, including thread, thread
 - A warp is a concept in GPU hardware, which is a group of 32 threads that execute in parallel, share the same instruction stream, and can execute the same operation in the same clock cycle. In CUDA programming, all threads in a thread block are grouped into several warps, each of which contains 32 threads. The existence of warps can improve the parallelism and efficiency of the GPU.
 
 In CUDA programming, thread block and grid size can be set to control parallel execution. For example, a grid consisting of multiple thread blocks, each containing multiple threads, can be created and parallelized on the GPU. Using thread blocks and grids can make the program fully utilize the parallel computing capabilities of the GPU, thereby accelerating the calculation process.  
+
 ## Disclaimer
 The code in this article comes from [csdn](https://blog.csdn.net/comedate/article/details/109347874), and has been appropriately modified to ensure that it compiles and runs correctly.
