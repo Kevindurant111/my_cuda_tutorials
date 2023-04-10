@@ -10,7 +10,7 @@ This tutorial aims to demonstrate how to write a simple CUDA project, including 
     - [Cuda variables](#Cuda-variables)  
     - [Three different ways to access threads](#Three-different-ways-to-access-threads)
     - [Thread, block, grid and warp](#Thread-block-grid-and-warp)  
-- [Disclaimer](Disclaimer)
+- [Disclaimer](#Disclaimer)
 
 ## Environment configuration
 Of course, the prerequisite is that you have already installed the CUDA toolkit and your host has at least one NVIDIA graphics card. If you are unsure, you can use 'nvidia-smi' to check the driver version and graphics card status.
