@@ -72,10 +72,24 @@ CUDA registers are a type of memory available to individual threads in a CUDA ke
 Registers are allocated and managed automatically by the compiler for each thread in a CUDA kernel. The number of registers available to a thread depends on the GPU architecture and the specific kernel code. Each thread has a limited number of registers available, so it's important to use them efficiently to avoid register spilling, which occurs when a thread uses more registers than are available and is forced to use slower memory types such as local memory.  
 One way to optimize register usage is to use loop unrolling and other optimization techniques to reduce the number of register variables needed. It's also important to avoid unnecessary memory accesses and data type conversions, which can increase register usage.  
 
+## Constant memory  
+In CUDA, constant memory is a type of read-only memory that is cached on-chip for fast access. It's designed to store data that doesn't change frequently, such as lookup tables or constant parameters used in a kernel.  
+Constant memory is declared using the "constant" keyword in CUDA, and its size is limited to 64KB. It's accessed by all threads in a grid with low latency and high bandwidth, making it faster than accessing global memory.  
+To use constant memory in a CUDA kernel, you must first allocate memory on the device using cudaMalloc() and then copy the data from host memory to the device constant memory using cudaMemcpyToSymbol(). Once the data is in constant memory, it can be accessed directly by all threads in the kernel.  
+It's important to note that the use of constant memory is optional, and not all CUDA applications can benefit from it. However, for applications that frequently use read-only data, constant memory can provide a significant performance boost.  
+
+## Texture memory  
+In CUDA, texture memory is a special type of read-only memory that is optimized for 2D and 3D spatial locality. It's designed to store data that is accessed in a regular pattern, such as image or video data. Texture memory is cached on-chip for fast access and can be accessed by all threads in a grid with low latency and high bandwidth.  
+Texture memory is declared using the "texture" keyword in CUDA, and its size is limited to 2D or 3D dimensions. It's accessed by threads using special texture fetching functions, such as tex1Dfetch() or tex2D().  
+To use texture memory in a CUDA kernel, you must first allocate memory on the device using cudaMallocArray() and then bind the memory to a texture using cudaBindTexture(). Once the texture is bound, threads can access it using the texture fetching functions.  
+It's important to note that the use of texture memory is optional, and not all CUDA applications can benefit from it. However, for applications that frequently access 2D or 3D spatially-local data, texture memory can provide a significant performance boost over global memory or constant memory.  
+
+## Todo: Surface memory 
+
 ## Tips
-- The memory type (local memory or register memory) for variables declared in a global function is automatically determined by the compiler and cannot be specified.  
+- The memory type (local memory or register memory) for variables declared in a global function is automatically determined by the compiler and cannot be specified. Specifically, when register memory is exhausted, the compiler will allocate local memory.  
 - The use of L1 cache and L2 cache can be specified using the launch_bounds parameter.  
-- Access speed: Register memory > L1 cache > Shared memory > L2 cache > Local memory > Global memory
+- Todo: Access speed: Register memory > L1 cache > Shared memory > L2 cache > Local memory > Global memory
 
 ## Disclaimer  
 The resources of this tutorial are from online videos on YouTube [NVIDIA CUDA Tutorial 5: Memory Overview](https://www.youtube.com/watch?v=RY2_8wB2QY4&t=205s).
