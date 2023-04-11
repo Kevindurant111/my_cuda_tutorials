@@ -88,8 +88,9 @@ It's important to note that the use of texture memory is optional, and not all C
 
 ## Tips
 - The memory type (local memory or register memory) for variables declared in a global function is automatically determined by the compiler and cannot be specified. Specifically, when register memory is exhausted, the compiler will allocate local memory.  
-- The use of L1 cache and L2 cache can be specified using the launch_bounds parameter.  
-- Access speed: Register memory > L1 cache > Shared memory > L2 cache > Local memory > Global memory
+- The use of L1 cache and L2 cache can be specified using the __launch_bounds__ parameter.  
+- Access speed:  
+![access speed](./images/access_speed.png)  
 
 ## Disclaimer  
 The resources of this tutorial are from online videos on YouTube [NVIDIA CUDA Tutorial 5: Memory Overview](https://www.youtube.com/watch?v=RY2_8wB2QY4&t=205s).
