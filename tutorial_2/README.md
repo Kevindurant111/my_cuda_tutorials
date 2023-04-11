@@ -10,6 +10,8 @@ This tutorial aims to clarify the memory concepts in CUDA.
 - [L1 cache](#L1-cache)
 - [Local memory](#Local-memory)
 - [Registers](#Registers)
+- [Constant memory](#Constant-memory)
+- [Texture memory](#Texture-memory)
 - [Tips](#Tips)
 - [Disclaimer](#Disclaimer)
 
@@ -84,12 +86,10 @@ Texture memory is declared using the "texture" keyword in CUDA, and its size is 
 To use texture memory in a CUDA kernel, you must first allocate memory on the device using cudaMallocArray() and then bind the memory to a texture using cudaBindTexture(). Once the texture is bound, threads can access it using the texture fetching functions.  
 It's important to note that the use of texture memory is optional, and not all CUDA applications can benefit from it. However, for applications that frequently access 2D or 3D spatially-local data, texture memory can provide a significant performance boost over global memory or constant memory.  
 
-## Todo: Surface memory 
-
 ## Tips
 - The memory type (local memory or register memory) for variables declared in a global function is automatically determined by the compiler and cannot be specified. Specifically, when register memory is exhausted, the compiler will allocate local memory.  
 - The use of L1 cache and L2 cache can be specified using the launch_bounds parameter.  
-- Todo: Access speed: Register memory > L1 cache > Shared memory > L2 cache > Local memory > Global memory
+- Access speed: Register memory > L1 cache > Shared memory > L2 cache > Local memory > Global memory
 
 ## Disclaimer  
 The resources of this tutorial are from online videos on YouTube [NVIDIA CUDA Tutorial 5: Memory Overview](https://www.youtube.com/watch?v=RY2_8wB2QY4&t=205s).
