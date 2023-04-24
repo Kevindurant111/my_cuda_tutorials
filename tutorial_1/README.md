@@ -65,6 +65,7 @@ A __global\_\_ function can be started by
 myKernelFunction<<<numBlocks, threadsPerBlock>>>(...);
 ```  
 where numBlocks is the number of blocks in the grid and threadsPerBlock is the number of threads in each block. In the above example, myKernelFunction will start numBlocks * threadsPerBlock threads, which will be executed in parallel on the GPU device. In this example, we use addKernel by calling it with one block and five thread.  
+- The <<< >>> syntax for calling a kernel is not standard C or C++. Those calls must be in a file compiled by the NVCC compiler. Those files are normally named with a .cu extension.
 
 ### Cuda variables  
 - In CUDA, __threadIdx__ is an internal variable that provides the index of the thread within its block. Within each block, threads are organized into a three-dimensional structure, and each thread has a three-dimensional coordinate (threadIdx.x, threadIdx.y, threadIdx.z) indicating its position within its block. It should be noted that it starts from 0.    
