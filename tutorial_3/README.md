@@ -82,7 +82,7 @@ cmake ..
 make
 ./cuda_example
 ```  
-Hopefully, you should see the following output:
+Hopefully, you should see the following output:  
 ![result](./images/result.png)  
 
 ## Disclaimer  
