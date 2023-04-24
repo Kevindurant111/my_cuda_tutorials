@@ -72,5 +72,18 @@ __global__ void FindClosestGPU(float3* points, int* indices, int* count) {
 - It is worth noting that the __count__ parameter form here is also a pointer. The parameters of global functions are usually pointers to device memory. Therefore, in most cases, declaring the parameters of global functions as pointers to device memory is the best choice because it allows the global function to access the data in device memory. In addition, pointers make it easy to pass large amounts of data without the need for explicit data transfers between the host and device.  
 However, for some simple cases, parameters can also be declared as basic types such as integers or floating-point numbers. But this case is usually used only when the parameter quantity is small and the data amount is also small. If a large amount of data needs to be processed, using pointers as parameters is a better choice.
 
+## Usage  
+```bash
+git clone https://github.com/Kevindurant111/my_cuda_tutorials.git
+cd my_cuda_tutorials/tutorial_3/
+mkdir build
+cd build
+cmake ..
+make
+./cuda_example
+```  
+Hopefully, you should see the following output:
+![result](./images/result.png)  
+
 ## Disclaimer  
 The resources of this tutorial are from online videos on YouTube [NVIDIA CUDA Tutorial 6: An Embarrassingly Parallel Algorithm 1](https://www.youtube.com/watch?v=0ILeCeaor0A&list=PLKK11Ligqititws0ZOoGk3SW-TZCar4dK&index=6).
