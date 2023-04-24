@@ -4,6 +4,9 @@ This tutorial aims to demonstrate how to solve embarrassingly parallel problems 
 # Table of Contents
 
 - [Embarrassingly Parallel Algorithms](#Embarrassingly-Parallel-Algorithms)
+- [Nearest neighbor problem](#Nearest-neighbor-problem)
+    - [C++ code for solving the nearest neighbor problem](#C++-code-for-solving-the-nearest-neighbor-problem)
+    - [CUDA C code for solving the nearest neighbor problem](#CUDA-C-code-for-solving-the-nearest-neighbor-problem)
 - [Disclaimer](#Disclaimer)
 
 ## Embarrassingly Parallel Algorithms  
@@ -46,7 +49,26 @@ void FindClosestCPU(float3 * points, int* indices, int count) {
 ```  
 __points__ stores the three-dimensional coordinates of each point, __indices__ represent the indices of the nearest points for each point, __count__ represents the number of points, and __dist__ represents the Euclidean distance between two points.
 
-### 
+### CUDA C code for solving the nearest neighbor problem  
+```bash
+__global__ void FindClosestGPU(float3* points, int* indices, int* count) {
+    if(*count <= 1) {
+        return;
+    }
+
+    int idx = threadIdx.x + blockIdx.x * blockDim.x;
+    if(idx < *count) {
+        float distToClosest = 3.40282e38f;
+        float dist = sqrt(points[idx].x * points[idx].x +
+                        points[idx].y + points[idx].y +
+                        points[idx].z + points[idx].z);
+        if(dist < distToClosest) {
+            distToClosest = dist;
+            indices[idx] = idx;
+        }
+    }
+}
+```
 
 ## Disclaimer  
 The resources of this tutorial are from online videos on YouTube [NVIDIA CUDA Tutorial 6: An Embarrassingly Parallel Algorithm 1](https://www.youtube.com/watch?v=0ILeCeaor0A&list=PLKK11Ligqititws0ZOoGk3SW-TZCar4dK&index=6).
