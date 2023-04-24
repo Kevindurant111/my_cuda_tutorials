@@ -46,14 +46,69 @@ Shared memory is typically used to store intermediate results and data that are 
 One important consideration when using shared memory is that memory accesses should be coalesced to optimize memory bandwidth. This means that threads in a warp should access consecutive memory addresses in a way that allows the GPU to fetch data in a single memory transaction, rather than multiple transactions. Coalesced memory accesses can significantly improve the performance of memory-bound CUDA kernels.  
 To declare a shared variable in CUDA, you can use the "shared" keyword, like this:
 ```bash
-__shared__ float mySharedVariable[256];
-```
+__global__ void KernelFunc() {
+    __shared__ float mySharedVariable[256];
+}
+```  
+The above declaration method is a static method. In addition to this, a dynamic declaration method can also be used.  
+```bash
+__global__ void KernelFunc() {
+    extern __shared__ float sharedMemory[];
+}
+
+# 256 indicates the size of the shared memory in bytes
+KernelFunc<<<xxx, xxx, 256>>>();
+```  
+Note that only one piece of shared memory can be requested by declaring it in a dynamic way. If you want to request a different piece of memory, you can do so in the following way:  
+```bash
+__global__ void KernelFunc() {
+    extern __shared__ float sharedMemory[];
+
+    char* firstArray = (char*)&sharedMemory[0];
+    float* secondArray = &sharedMemory[12];
+}
+
+KernelFunc<<<xxx, xxx, 256>>>();
+```  
 You can then access this variable from any thread within the same block. It's important to note that shared variables declared with "shared" are initialized in every block and are not visible to threads in other blocks.   
+- Race condition  
+A race condition in CUDA occurs when multiple threads in a block or across different blocks access the same shared memory location or global memory location simultaneously without proper synchronization. This can lead to unpredictable and incorrect results since the order in which the threads access and modify the shared memory or global memory is undefined.  
+One common example of a race condition in CUDA is when multiple threads try to increment the same global counter variable at the same time. If proper synchronization mechanisms, such as atomic operations or mutex locks, are not used to ensure that only one thread accesses the counter variable at a time, the counter value may not be incremented correctly.  
+To avoid race conditions in CUDA, it is important to use proper synchronization mechanisms to ensure that only one thread accesses a shared or global memory location at a time. This can be done using CUDA’s built-in synchronization primitives, such as atomic operations, memory fences, and mutex locks. Additionally, it is important to carefully design the kernel to avoid data dependencies and to ensure that each thread operates independently on its own data.  
+__syncthreads() is a built-in CUDA synchronization function that can be used to synchronize all threads in a block.  
+In CUDA, all threads in each block are executed in parallel, which means that they may have competing conditions during execution, such as multiple threads reading and writing to the same piece of shared memory at the same time. The __syncthreads() function can be used to ensure that all threads in a block execute up to the code before this function before continuing to execute the code after it, thus ensuring synchronization.  
+Specifically, the __syncthreads() function blocks the thread calling it until all threads in the block have reached the location of the function call, and then continues executing the code that follows. This means that if a thread calls __syncthreads() and no other threads have reached the function call yet, then that thread will be blocked until all other threads reach that position.  
+Note that __syncthreads() can only be used to synchronize threads in the same block, not between different blocks. Also, __syncthreads() can only be used to synchronize threads in shared memory, not threads in global memory.  
+    ```bash
+    __global__ void KernelFunc() {
+        __shared__ int i;
+        i = 0;
+        __syncthreads();
+        if(threadIdx.x == 0) i++;
+        __syncthreads();
+        if(threadIdx.x == 1) i++;
+    }
+    ```  
+    In the above example, we have synchronized the state of different threads using the S function, which results in a final i value of 2. If this were not done, a race condition would arise, and then the value of i could be 0, 1 or 2.
 
 ## L1 cache  
 CUDA L1 cache, or the first-level cache, is a hardware feature on NVIDIA GPUs that can improve memory performance for certain types of CUDA applications.  
 L1 cache is a small, fast memory that sits closest to the processing elements within a CUDA multiprocessor. It stores data and instructions that are frequently accessed by a single thread. When a thread requests data from global memory, the L1 cache checks if the data is already stored in the cache. If the data is present, it can be quickly accessed without having to go through the slower global memory.  
 In CUDA, L1 cache is enabled by default on all compute-capable devices. However, not all applications can benefit from L1 cache. In fact, some applications may see a performance decrease when L1 cache is enabled, especially if the application is already optimized to use shared memory efficiently.  
+- Setting Amount of Shared Memory and L1 cache  
+cudaFuncSetCacheConfig() is a CUDA Runtime function that sets the cache configuration of CUDA functions on the GPU. This function controls which cache method the GPU uses when executing CUDA functions to optimize memory access performance.  
+In CUDA, the GPU has several different types of caches, including L1 cache, L2 cache, and shared memory. Different types of cache apply to different memory access patterns, so the choice of cache type needs to be considered on a case-by-case basis.  
+The prototype of the cudaFuncSetCacheConfig() function is as follows:
+    ```bash
+    cudaError_t cudaFuncSetCacheConfig(const void* func, cudaFuncCache cacheConfig)
+    ```
+    Where the func parameter is a pointer to the CUDA function to set the cache configuration and the cacheConfig parameter is an enumerated value that specifies the type of cache to be used. cacheConfig can take the following values: 
+    - cudaFuncCachePreferNone: indicating that no cache is to be used;  
+    - cudaFuncCachePreferShared: indicates that shared memory is used as the preferred cache;  
+    - cudaFuncCachePreferL1: indicates that the L1 cache is used as the preferred cache;  
+    - cudaFuncCachePreferEqual: indicates that both L1 and shared memory can be used, as chosen by the system itself.  
+    
+    Note that the cudaFuncSetCacheConfig() function must be called before the CUDA function is called, otherwise the setting will not take effect. Also, this function can only be set on global functions and device functions, and cannot be used to set the cache configuration of host functions.
 
 ## Local memory  
 CUDA local memory is a type of memory that is automatically allocated and managed by the compiler for each thread in a CUDA kernel. It is used to store function arguments, local variables, and temporary results that cannot be stored in registers.  
