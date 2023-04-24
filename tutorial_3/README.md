@@ -69,7 +69,7 @@ __global__ void FindClosestGPU(float3* points, int* indices, int* count) {
     }
 }
 ```  
-- It is worth noting that the count parameter form here is also a pointer. The parameters of global functions are usually pointers to device memory. Therefore, in most cases, declaring the parameters of global functions as pointers to device memory is the best choice because it allows the global function to access the data in device memory. In addition, pointers make it easy to pass large amounts of data without the need for explicit data transfers between the host and device.  
+- It is worth noting that the __count__ parameter form here is also a pointer. The parameters of global functions are usually pointers to device memory. Therefore, in most cases, declaring the parameters of global functions as pointers to device memory is the best choice because it allows the global function to access the data in device memory. In addition, pointers make it easy to pass large amounts of data without the need for explicit data transfers between the host and device.  
 However, for some simple cases, parameters can also be declared as basic types such as integers or floating-point numbers. But this case is usually used only when the parameter quantity is small and the data amount is also small. If a large amount of data needs to be processed, using pointers as parameters is a better choice.
 
 ## Disclaimer  
