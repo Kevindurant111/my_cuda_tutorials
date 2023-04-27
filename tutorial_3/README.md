@@ -7,6 +7,8 @@ This tutorial aims to demonstrate how to solve embarrassingly parallel problems 
 - [Nearest neighbor problem](#Nearest-neighbor-problem)
     - [C++ code for solving the nearest neighbor problem](#C++-code-for-solving-the-nearest-neighbor-problem)
     - [CUDA C code for solving the nearest neighbor problem](#CUDA-C-code-for-solving-the-nearest-neighbor-problem)
+- [Blocking with shared memory](#Blocking-with-shared-memory)
+- [Usage](#Usage)
 - [Disclaimer](#Disclaimer)
 
 ## Embarrassingly Parallel Algorithms  
@@ -36,9 +38,9 @@ void FindClosestCPU(float3 * points, int* indices, int count) {
             if(i == curPoint) {
                 continue;
             }
-            float dist = sqrt(point[curPoint].x * point[curPoint].x +
-            point[curPoint].y + point[curPoint].y
-            point[curPoint].z + point[curPoint].z);
+            float dist = sqrt((points[curPoint].x - points[i].x) * (points[curPoint].x - points[i].x) +
+            (points[curPoint].y - points[i].y) * (points[curPoint].y - points[i].y) +
+            (points[curPoint].z - points[i].z) * (points[curPoint].z - points[i].z));
             if(dist < distToClosest) {
                 distToClosest = dist;
                 indices[curPoint] = i;
@@ -59,18 +61,69 @@ __global__ void FindClosestGPU(float3* points, int* indices, int* count) {
     int idx = threadIdx.x + blockIdx.x * blockDim.x;
     if(idx < *count) {
         float distToClosest = 3.40282e38f;
-        float dist = sqrt(points[idx].x * points[idx].x +
-                        points[idx].y + points[idx].y +
-                        points[idx].z + points[idx].z);
-        if(dist < distToClosest) {
-            distToClosest = dist;
-            indices[idx] = idx;
+        for(int i = 0; i < *count; i++) {
+            if(i == idx) {
+                continue;
+            }
+            float dist = sqrt((points[idx].x - points[i].x) * (points[idx].x - points[i].x) +
+            (points[idx].y - points[i].y) * (points[idx].y - points[i].y) +
+            (points[idx].z - points[i].z) * (points[idx].z - points[i].z));
+            if(dist < distToClosest) {
+                distToClosest = dist;
+                indices[idx] = i;
+            }
         }
     }
 }
 ```  
 - It is worth noting that the __count__ parameter form here is also a pointer. The parameters of global functions are usually pointers to device memory. Therefore, in most cases, declaring the parameters of global functions as pointers to device memory is the best choice because it allows the global function to access the data in device memory. In addition, pointers make it easy to pass large amounts of data without the need for explicit data transfers between the host and device.  
-However, for some simple cases, parameters can also be declared as basic types such as integers or floating-point numbers. But this case is usually used only when the parameter quantity is small and the data amount is also small. If a large amount of data needs to be processed, using pointers as parameters is a better choice.
+However, for some simple cases, parameters can also be declared as basic types such as integers or floating-point numbers. But this case is usually used only when the parameter quantity is small and the data amount is also small. If a large amount of data needs to be processed, using pointers as parameters is a better choice.  
+
+## Blocking with shared memory  
+CUDA blocking technique is a method to optimize GPU computing performance, especially for memory-bound tasks. In CUDA, a block consists of a group of threads, and blocks are organized into a grid. The goal of CUDA blocking technique is to improve GPU computing efficiency by optimizing the usage of shared memory and data access patterns within a block.  
+The core idea of CUDA blocking technique is to reduce the number of accesses to global memory, which is relatively slower, by utilizing shared memory, which is faster. By loading data from global memory to shared memory and performing computations on shared memory, the number of global memory accesses can be reduced, thus improving performance.  
+The CUDA blocking technique typically involves the following steps:  
+- Data loading: Load the data to be processed from global memory to shared memory. This can be done by multiple threads within a block, with each thread loading a portion of the data.  
+- Data computation: Within the block, threads can perform computations on the data stored in shared memory. Since accessing shared memory is faster, it reduces the latency associated with accessing global memory.  
+- Data storing: Write the computed results back from shared memory to global memory. Similar to data loading, this can be achieved through the collaboration of multiple threads, with each thread responsible for writing back a portion of the data.  
+Using this approach, the CUDA program can be further optimized by:  
+```bash
+__global__ void FindClosestGPUWithBlocking(float3* points, int* indices, int* count) {
+    __shared__ float3 sharedPoints[blockSize];
+    if(*count <= 1) {
+        return;
+    }
+
+    int idx = threadIdx.x + blockIdx.x * blockDim.x;
+    float3 thisPoint;
+    float distToClosest = 3.40282e38f;
+    if(idx < *count) {
+        thisPoint = points[idx];
+
+        for(int currentBlockOfPoints = 0; currentBlockOfPoints < gridDim.x; currentBlockOfPoints++) {
+            if(threadIdx.x + currentBlockOfPoints * blockSize < *count) {
+                sharedPoints[threadIdx.x] = points[threadIdx.x + currentBlockOfPoints * blockSize];
+                __syncthreads();
+            }
+            
+            for(int i = 0; i < blockSize; i++) {
+                if(i + currentBlockOfPoints * blockSize == idx) {
+                    continue;
+                }
+                float dist = sqrt((thisPoint.x - sharedPoints[i].x) * (thisPoint.x - sharedPoints[i].x) +
+                (thisPoint.y - sharedPoints[i].y) * (thisPoint.y - sharedPoints[i].y) +
+                (thisPoint.z - sharedPoints[i].z) * (thisPoint.z - sharedPoints[i].z));
+                if((dist < distToClosest) && (i + currentBlockOfPoints * blockSize < *count)) {
+                    distToClosest = dist;
+                    indices[idx] = i + currentBlockOfPoints * blockSize;
+                }
+            }
+            __syncthreads();
+        }
+    }
+}
+```  
+In the code above, we divided the global memory into groups of 640 blocks and copied them to shared memory. In each iteration, we first update the content of the shared memory, and then all points check the distances with the 640 points on the current shared memory and update their nearest point indices. It is not difficult to verify its correctness. Additionally, we can observe that this method speeds up significantly compared to not using blocking.  
 
 ## Usage  
 ```bash

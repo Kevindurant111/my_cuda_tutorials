@@ -1,5 +1,8 @@
 #include <cuda.h>
 #include <cmath>
+#include <iostream>
+
+using namespace std;
 
 void FindClosestCPU(float3 * points, int* indices, int count) {
     if(count <= 1) {
@@ -11,9 +14,9 @@ void FindClosestCPU(float3 * points, int* indices, int count) {
             if(i == curPoint) {
                 continue;
             }
-            float dist = sqrt(points[curPoint].x * points[curPoint].x +
-            points[curPoint].y + points[curPoint].y +
-            points[curPoint].z + points[curPoint].z);
+            float dist = sqrt((points[curPoint].x - points[i].x) * (points[curPoint].x - points[i].x) +
+            (points[curPoint].y - points[i].y) * (points[curPoint].y - points[i].y) +
+            (points[curPoint].z - points[i].z) * (points[curPoint].z - points[i].z));
             if(dist < distToClosest) {
                 distToClosest = dist;
                 indices[curPoint] = i;

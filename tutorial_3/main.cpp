@@ -5,6 +5,7 @@
 #include "FindClosestCPU.h"
 
 extern "C" cudaError_t FindClosestGPUCuda(float3* points, int* indices, int count);
+extern "C" cudaError_t FindClosestGPUCudaWithBlocking(float3* points, int* indices, int count);
 
 using namespace std;
 
@@ -27,6 +28,7 @@ int main() {
         averageTime += finishTime - startTime;
     }
     averageTime /= t;
+    cout << "Check the nearest point index of the 642st point: " << *(indices + 641) << endl;
     cout << "CPU time: " << averageTime << endl;
 
     averageTime = 0;
@@ -45,7 +47,27 @@ int main() {
         averageTime += finishTime - startTime;
     }
     averageTime /= t;
+    cout << "Check the nearest point index of the 642st point: " << *(indices + 641) << endl;
     cout << "GPU time: " << averageTime << endl;
+
+    averageTime = 0;
+    
+    for(int i = 0; i < t; i++) {
+        long startTime = clock();
+        cudaError_t cudaStatus;
+        cudaStatus = FindClosestGPUCudaWithBlocking(points, indices, count);
+        if (cudaStatus != cudaSuccess) {
+            fprintf(stderr, "FindClosestGPUCuda failed!");
+            delete[] indices;
+            delete[] points;
+            return 1;
+        }
+        long finishTime = clock();
+        averageTime += finishTime - startTime;
+    }
+    averageTime /= t;
+    cout << "Check the nearest point index of the 642st point: " << *(indices + 641) << endl;
+    cout << "GPU(with blocking) time: " << averageTime << endl;
 
     delete[] indices;
     delete[] points;
