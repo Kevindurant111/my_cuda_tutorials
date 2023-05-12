@@ -62,7 +62,7 @@ Next, let's explain what this thread does in each iteration. We can abstract thi
 nvcc -ccbin gcc-7 MatrixMul.cu -o MatrixMul -lstdc++
 ./MatrixMul
 ```  
-Hopefully, you should see the following output: 
+Hopefully, you should see the following output:  
 ![tiledmatmul](./images/results.png)
 
 ## Disclaimer  
