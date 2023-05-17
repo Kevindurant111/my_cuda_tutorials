@@ -57,7 +57,34 @@ The function prototype is as follows:
     - cudaMemcpyDeviceToHost: Copy data from device to host. 
     - cudaMemcpyDeviceToDevice: Copy data between different regions of device memory.  
     - cudaMemcpyHostToHost: Copy data between different regions of host memory.  
-    
+- __cudaMallocManaged__ is a function provided by the CUDA (Compute Unified Device Architecture) programming model for allocating managed memory on a GPU. Managed memory allows for transparent data movement between the CPU and GPU, eliminating the need for explicit memory copies. The cudaMallocManaged function is used to allocate memory that can be accessed by both the CPU and GPU. It returns a pointer to the allocated memory, which can be used by both the host (CPU) and the device (GPU) without the need for explicit memory transfers. The advantage of using it is that users no longer need to manually implement memory movement and management. The function prototype is as follows:   
+    ```bash
+    cudaError_t cudaMallocManaged(void** devPtr, size_t size, unsigned int flags = cudaMemAttachGlobal);
+    ```  
+    The function accepts the following parameters:  
+    - devPtr: A pointer to a pointer to receive the allocated memory address.
+    - size: The size of the memory to allocate in bytes.
+    - flags: An optional parameter that specifies memory attachment flags, with a default value of cudaMemAttachGlobal.  
+        The parameter can take one of the following values:
+        - cudaMemAttachGlobal: The allocated memory is visible across the entire CUDA device and can be accessed by any thread on any GPU.
+        - cudaMemAttachHost: The allocated memory is visible to both the host (CPU) and the device (GPU), but can only be accessed by host threads or GPU threads.  
+
+    The cudaMallocManaged function returns a cudaError_t error code. If the function call is successful, it returns cudaSuccess.  
+- __cudaDeviceSynchronize__ is a function in CUDA that ensures that all preceding CUDA runtime calls issued by the CPU are completed before the CPU continues execution. It acts as a synchronization point between the CPU and the GPU, ensuring that all previous GPU operations have finished before the CPU proceeds. The function prototype is as follows:  
+    ```bash
+    cudaError_t cudaDeviceSynchronize(void);
+    ```  
+    The function cudaDeviceSynchronize has no parameters. It returns a cudaError_t error code. If the function call is successful, it returns cudaSuccess.  
+- __cudaMemPrefetchAsync__ is a CUDA function used to asynchronously prefetch data between the CPU and GPU. It allows for explicit control over data movement, helping to overlap data transfers with computation to improve overall performance. The function prototype for cudaMemPrefetchAsync is as follows:  
+    ```bash
+    cudaError_t cudaMemPrefetchAsync(const void* devPtr, size_t count, int dstDevice, cudaStream_t stream = 0);
+    ```  
+    The parameters of cudaMemPrefetchAsync are as follows:  
+    - devPtr: A pointer to the memory region to be prefetched.
+    - count: The number of bytes to prefetch.
+    - dstDevice: The device ID of the destination device where the data is being prefetched.
+    - stream (optional): The CUDA stream to associate the prefetch operation with. It allows overlapping the prefetch with other CUDA operations in the same stream. The default value is 0, which corresponds to the default stream.
+
 Note: __cudaSuccess__ is an enumeration value in CUDA C/C++ programming language, which represents the successful execution of a CUDA function. It is defined in the header file cuda_runtime_api.h and has a value of 0. In CUDA programming, we usually check the return value when calling CUDA API functions to ensure that the function is executed successfully. If the function returns cudaSuccess, it indicates that the function has been executed successfully, otherwise, it indicates that the function has failed.  
 
 ## CUDA_ERROR_LAUNCH_TIMEOUT ERROR   
